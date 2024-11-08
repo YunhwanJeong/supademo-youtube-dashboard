@@ -1,14 +1,15 @@
+import supademoLogo from "@/public/supademo-logo.svg";
 import type { Metadata } from "next";
-import { Inter } from 'next/font/google';
+import { Inter } from "next/font/google";
+import Image from "next/image";
+import Link from "next/link";
 import "./globals.css";
 
 const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  fallback: ['serif'],
-})
-
-
+  subsets: ["latin"],
+  display: "swap",
+  fallback: ["serif"],
+});
 
 export const metadata: Metadata = {
   title: "Supademo YouTube Dashboard",
@@ -22,9 +23,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.className} antialiased`}
-      >
+      <body className={`${inter.className} antialiased`}>
+        <header className="p-5 border border-slate-300">
+          <Link href="/">
+            <Image src={supademoLogo} alt="Supademo logo" width={112} />
+          </Link>
+        </header>
         {children}
       </body>
     </html>
