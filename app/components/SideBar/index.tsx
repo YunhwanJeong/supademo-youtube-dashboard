@@ -15,29 +15,32 @@ const rawVideos = rawVideoData.items as VideoItemType[];
 export default function SideBar({ selectedVideo, onVideoSelect }: Props) {
   const [page, setPage] = useState(2);
   const videosPerPage = 10;
-  const [videos, setVideos] = useState<VideoItemType[]>(
-    rawVideos.slice(0, videosPerPage)
-  );
+  const [videos, setVideos] = useState<VideoItemType[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searchResults, setSearchResults] =
+    useState<VideoItemType[]>(rawVideos);
   const observerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    onVideoSelect(videos[0]);
-  }, []);
+    setVideos(searchResults.slice(0, videosPerPage));
+  }, [searchResults]);
 
   const loadVideos = async () => {
     if (loading) return;
     setLoading(true);
 
     const startIndex = (page - 1) * videosPerPage;
-    if (startIndex >= rawVideos.length) {
+    if (startIndex >= searchResults.length) {
       setLoading(false);
       return;
     }
 
-    const newVideos = rawVideos.slice(startIndex, startIndex + videosPerPage);
+    const newVideos = searchResults.slice(
+      startIndex,
+      startIndex + videosPerPage
+    );
     // Simulate a network delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     setVideos((prevVideos) => [...(prevVideos || []), ...newVideos]);
     setPage((prevPage) => prevPage + 1);
@@ -59,9 +62,23 @@ export default function SideBar({ selectedVideo, onVideoSelect }: Props) {
     };
   }, [loadVideos]);
 
+  const handleSearch = (query: string) => {
+    if (query.trim() === "") {
+      setSearchResults(rawVideos); // Reset to original list when search is cleared
+    } else {
+      const filteredVideos = rawVideos.filter(
+        (video) =>
+          video.snippet.title.toLowerCase().includes(query.toLowerCase()) ||
+          video.snippet.description.toLowerCase().includes(query.toLowerCase())
+      );
+      setSearchResults(filteredVideos);
+      setPage(2); // Reset pagination
+    }
+  };
+
   return (
     <aside className="flex flex-col gap-y-6 w-full order-2 p-5 border-t border-gray-100">
-      <SearchBar />
+      <SearchBar onSearch={handleSearch} />
 
       <div className="flex flex-col gap-y-5 ">
         {videos.map((video) => (

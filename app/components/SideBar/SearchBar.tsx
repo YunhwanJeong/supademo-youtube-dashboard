@@ -1,4 +1,23 @@
-export default function SearchBar() {
+import { debounce } from "@/app/utils";
+import { useState } from "react";
+
+interface Props {
+  onSearch: (query: string) => void;
+}
+
+export default function SearchBar({ onSearch }: Props) {
+  const [query, setQuery] = useState("");
+
+  const handleSearch = debounce((query: string) => {
+    onSearch(query);
+  }, 300);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newQuery = e.target.value;
+    setQuery(newQuery);
+    handleSearch(newQuery);
+  };
+
   return (
     <div className="flex items-center w-full bg-white border border-gray-300 rounded-full shadow-sm overflow-hidden focus-within:border-indigo-500">
       <div className="pl-4 text-gray-400">
@@ -20,6 +39,8 @@ export default function SearchBar() {
         type="text"
         placeholder="Search"
         className="w-full py-2 pl-2 pr-4 bg-transparent focus:outline-none text-gray-700 placeholder-gray-400"
+        value={query}
+        onChange={handleInputChange}
       />
     </div>
   );
