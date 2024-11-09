@@ -1,6 +1,7 @@
 import rawVideoData from "@/app/data/data.json";
 import type { VideoItemType } from "@/app/types/videoTypes";
 import { useEffect, useRef, useState } from "react";
+import LoadingSpinner from "../LoadingSpinner";
 import SearchBar from "./SearchBar";
 import VideoItem from "./VideoItem";
 
@@ -17,19 +18,30 @@ export default function SideBar({ selectedVideo, onVideoSelect }: Props) {
   const [videos, setVideos] = useState<VideoItemType[]>(
     rawVideos.slice(0, videosPerPage)
   );
+  const [loading, setLoading] = useState(false);
   const observerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     onVideoSelect(videos[0]);
   }, []);
 
-  const loadVideos = () => {
+  const loadVideos = async () => {
+    if (loading) return;
+    setLoading(true);
+
     const startIndex = (page - 1) * videosPerPage;
-    if (startIndex >= rawVideos.length) return;
+    if (startIndex >= rawVideos.length) {
+      setLoading(false);
+      return;
+    }
 
     const newVideos = rawVideos.slice(startIndex, startIndex + videosPerPage);
+    // Simulate a network delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     setVideos((prevVideos) => [...(prevVideos || []), ...newVideos]);
     setPage((prevPage) => prevPage + 1);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -60,7 +72,12 @@ export default function SideBar({ selectedVideo, onVideoSelect }: Props) {
             onClick={() => onVideoSelect(video)}
           />
         ))}
-        <div ref={observerRef} className="h-10"></div>
+
+        {loading ? (
+          <LoadingSpinner />
+        ) : (
+          <div ref={observerRef} className="h-10"></div>
+        )}
       </div>
     </aside>
   );
