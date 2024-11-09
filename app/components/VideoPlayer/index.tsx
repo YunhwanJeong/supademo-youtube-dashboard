@@ -1,8 +1,13 @@
 "use client";
 
+import { VideoItemType } from "@/app/types/videoTypes";
 import { useState } from "react";
 
-export default function VideoPlayer() {
+interface Props {
+  selectedVideo: VideoItemType | null;
+}
+
+export default function VideoPlayer({ selectedVideo }: Props) {
   const dividerWidth = 1;
   const spacing = 8;
   const dividerCount = 70;
