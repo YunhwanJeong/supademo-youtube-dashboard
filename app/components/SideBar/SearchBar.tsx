@@ -1,0 +1,26 @@
+export default function SearchBar() {
+  return (
+    <div className="flex items-center w-full max-w-md bg-white border border-gray-300 rounded-full shadow-sm overflow-hidden focus-within:border-indigo-500">
+      <div className="pl-4 text-gray-400">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fillRule="evenodd"
+            d="M12.9 14.32a8 8 0 111.42-1.42l4.38 4.38a1 1 0 01-1.42 1.42l-4.38-4.38zM8 14a6 6 0 100-12 6 6 0 000 12z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </div>
+
+      <input
+        type="text"
+        placeholder="Search"
+        className="w-full py-2 pl-2 pr-4 bg-transparent focus:outline-none text-gray-700 placeholder-gray-400"
+      />
+    </div>
+  );
+}
