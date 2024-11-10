@@ -22,7 +22,7 @@ export default function VideoItem({
 
   return (
     <div
-      className={`flex gap-x-3 p-3 rounded-xl border hover:border-indigo-500 transition duration-200
+      className={`flex gap-x-3 p-3 rounded-xl border hover:border-indigo-500 transition duration-200 cursor-pointer
           ${
             isSelected ? "bg-indigo-100 border-indigo-500" : "border-indigo-200"
           }`}
