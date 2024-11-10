@@ -117,6 +117,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
     if (
       player &&
       isPlaying &&
+      typeof player.getCurrentTime === "function" && // Ensure getCurrentTime is a function
       player.getCurrentTime() >= (endTrim * duration) / 100
     ) {
       player.pauseVideo();
