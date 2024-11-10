@@ -41,16 +41,14 @@ export default function VideoItem({
       </div>
       <div className="flex-1 min-w-0">
         <h4
-          className={`text-base line-clamp-2 ${
-            isSelected ? "font-extrabold" : "font-semibold"
-          }`}
+          className={`text-base line-clamp-2 transition-all duration-200
+            ${isSelected ? "font-extrabold" : "font-semibold"}`}
         >
           {video.snippet.title}
         </h4>
         <p
-          className={`text-sm text-gray-600 line-clamp-2 ${
-            isSelected ? "font-semibold" : "font-normal"
-          }`}
+          className={`text-sm text-gray-600 line-clamp-2 transition-all duration-200
+            ${isSelected ? "font-semibold" : "font-normal"}`}
         >
           {video.snippet.description}
         </p>
