@@ -1,18 +1,20 @@
-import rawVideoData from "@/app/data/data.json";
 import type { VideoItemType } from "@/app/types/videoTypes";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner";
 import SearchBar from "./SearchBar";
 import VideoItem from "./VideoItem";
 
 interface Props {
+  rawVideos: VideoItemType[];
   selectedVideo: VideoItemType | null;
   onVideoSelect: (video: VideoItemType) => void;
 }
 
-const rawVideos = rawVideoData.items as VideoItemType[];
-
-export default function SideBar({ selectedVideo, onVideoSelect }: Props) {
+export default function SideBar({
+  rawVideos,
+  selectedVideo,
+  onVideoSelect,
+}: Props) {
   const [page, setPage] = useState(2);
   const videosPerPage = 10;
   const [videos, setVideos] = useState<VideoItemType[]>([]);
@@ -25,7 +27,7 @@ export default function SideBar({ selectedVideo, onVideoSelect }: Props) {
     setVideos(searchResults.slice(0, videosPerPage));
   }, [searchResults]);
 
-  const loadVideos = async () => {
+  const loadVideos = useCallback(async () => {
     if (loading) return;
     setLoading(true);
 
@@ -45,7 +47,7 @@ export default function SideBar({ selectedVideo, onVideoSelect }: Props) {
     setVideos((prevVideos) => [...(prevVideos || []), ...newVideos]);
     setPage((prevPage) => prevPage + 1);
     setLoading(false);
-  };
+  }, [loading, page, searchResults]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
