@@ -8,26 +8,21 @@ declare global {
 
 import { VideoItemType } from "@/app/types/videoTypes";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { debounce } from "../utils";
 
 interface Props {
   selectedVideo: VideoItemType;
 }
 
 export default function VideoPlayer({ selectedVideo }: Props) {
-  const dividerWidth = 1;
-  const spacing = 8;
-  const dividerCount = 70;
-  const dividerPadding = 8;
-
   const playerRef = useRef<HTMLDivElement | null>(null);
   const [player, setPlayer] = useState<YT.Player | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [start] = useState(0);
-
-  const selectionWidth =
-    dividerCount * dividerWidth +
-    (dividerCount - 1) * spacing +
-    dividerPadding * 2;
+  const [startTrim, setStartTrim] = useState(0);
+  const [endTrim, setEndTrim] = useState(100); // Percentage of the total video length
+  const [duration, setDuration] = useState(0);
+  const trimContainerRef = useRef<HTMLDivElement | null>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
 
   const initializePlayer = useCallback(() => {
     if (playerRef.current === null || !selectedVideo?.id.videoId) return;
@@ -46,12 +41,52 @@ export default function VideoPlayer({ selectedVideo }: Props) {
           disablekb: 1,
         },
         events: {
-          onReady: () => setIsPlaying(false),
+          onReady: (event: YT.PlayerEvent) => {
+            setIsPlaying(false);
+            setDuration(event.target.getDuration());
+          },
           onStateChange: handlePlayerStateChange,
         },
       })
     );
   }, [selectedVideo.id.videoId]);
+
+  // Create a debounced save function using the custom debounce utility
+  const debouncedSaveTrimToStorage = useCallback(
+    debounce(() => {
+      localStorage.setItem(
+        `trim_${selectedVideo.id.videoId}`,
+        JSON.stringify({ startTrim, endTrim })
+      );
+    }), // Adjust delay as needed
+    [selectedVideo.id.videoId, startTrim, endTrim]
+  );
+
+  // Load trim data from localStorage for the specific video
+  useEffect(() => {
+    const loadTrimFromStorage = () => {
+      const storedTrim = localStorage.getItem(
+        `trim_${selectedVideo.id.videoId}`
+      );
+      if (storedTrim) {
+        const { startTrim, endTrim } = JSON.parse(storedTrim);
+        setStartTrim(startTrim);
+        setEndTrim(endTrim);
+      } else {
+        // Default values if no saved trim data exists for this video
+        setStartTrim(0);
+        setEndTrim(100);
+      }
+    };
+
+    loadTrimFromStorage();
+  }, [selectedVideo.id.videoId]);
+
+  useEffect(() => {
+    debouncedSaveTrimToStorage();
+    // Clean up debounce on unmount
+    return () => debouncedSaveTrimToStorage.cancel();
+  }, [startTrim, endTrim, debouncedSaveTrimToStorage]);
 
   useEffect(() => {
     if (window.YT) {
@@ -70,6 +105,36 @@ export default function VideoPlayer({ selectedVideo }: Props) {
     };
   }, [initializePlayer]);
 
+  useEffect(() => {
+    if (
+      player &&
+      isPlaying &&
+      player.getCurrentTime() >= (endTrim * duration) / 100
+    ) {
+      player.pauseVideo();
+      setIsPlaying(false);
+    }
+  }, [endTrim, isPlaying, player, duration]);
+
+  useEffect(() => {
+    if (trimContainerRef.current) {
+      console.log(
+        "trimContainerRef.current.getBoundingClientRect().width: ",
+        trimContainerRef.current.getBoundingClientRect().width
+      );
+      setContainerWidth(trimContainerRef.current.getBoundingClientRect().width);
+    }
+    const handleResize = () => {
+      if (trimContainerRef.current) {
+        setContainerWidth(
+          trimContainerRef.current.getBoundingClientRect().width
+        );
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [trimContainerRef]);
+
   const handlePlayerStateChange = (event: YT.OnStateChangeEvent) => {
     const { YT } = window;
     if (event.data === YT.PlayerState.PLAYING) {
@@ -87,8 +152,50 @@ export default function VideoPlayer({ selectedVideo }: Props) {
     if (isPlaying) {
       player.pauseVideo();
     } else {
+      player.seekTo((startTrim * duration) / 100, true);
       player.playVideo();
     }
+  };
+
+  const handleDragStart = (
+    e: React.MouseEvent | React.TouchEvent,
+    isStart: boolean
+  ) => {
+    const parentRect = trimContainerRef.current?.getBoundingClientRect();
+
+    if (!parentRect) return;
+
+    // Function to calculate position based on mouse or touch event
+    const calculatePosition = (event: MouseEvent | TouchEvent) => {
+      const clientX =
+        event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
+      const position =
+        Math.min(
+          Math.max(0, (clientX - parentRect.left) / parentRect.width),
+          1
+        ) * 100;
+
+      if (isStart) {
+        setStartTrim(Math.min(position, endTrim - 1));
+      } else {
+        setEndTrim(Math.max(position, startTrim + 1));
+      }
+    };
+    // Event listeners for mouse and touch
+    const onMove = (event: MouseEvent | TouchEvent) => {
+      calculatePosition(event);
+    };
+    const onStop = () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onStop);
+      document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("touchend", onStop);
+    };
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onStop);
+    document.addEventListener("touchmove", onMove);
+    document.addEventListener("touchend", onStop);
   };
 
   return (
@@ -145,30 +252,37 @@ export default function VideoPlayer({ selectedVideo }: Props) {
         </div>
 
         <div
-          className="relative w-full flex bg-gray-200 overflow-x-auto"
-          style={{ padding: `${dividerPadding}px` }}
+          ref={trimContainerRef}
+          className="relative w-full bg-gray-200 h-4 rounded-md flex items-center"
         >
-          <div className="flex items-center" style={{ gap: `${spacing}px` }}>
-            {Array.from({ length: dividerCount }).map((_, index) => (
-              <div
-                key={index}
-                className="h-10 bg-gray-400"
-                style={{ width: `${dividerWidth}px` }}
-              ></div>
-            ))}
-          </div>
-
+          {/* Trimmed background */}
           <div
-            className="absolute top-0 left-0 h-full bg-indigo-700 bg-opacity-30 rounded-lg flex"
+            className="h-full bg-indigo-700 bg-opacity-30 absolute"
             style={{
-              width: `${selectionWidth}px`,
-              transform: `translateX(${start * (dividerWidth + spacing)}px)`,
+              transform: `translateX(${(startTrim / 100) * containerWidth}px)`,
+              width: `${((endTrim - startTrim) / 100) * containerWidth}px`,
             }}
-          >
-            <div className="w-2 h-full bg-indigo-700 bg-opacity-60 cursor-pointer rounded-l-lg"></div>
+          ></div>
 
-            <div className="w-2 h-full bg-indigo-700 bg-opacity-60 cursor-pointer rounded-r-lg ml-auto"></div>
-          </div>
+          {/* Start trim handle */}
+          <div
+            className="h-6 w-2 bg-indigo-700 rounded-full cursor-pointer absolute"
+            style={{
+              transform: `translateX(${(startTrim / 100) * containerWidth}px)`,
+            }}
+            onMouseDown={(e) => handleDragStart(e, true)}
+            onTouchStart={(e) => handleDragStart(e, true)}
+          ></div>
+
+          {/* End trim handle */}
+          <div
+            className="h-6 w-2 bg-indigo-700 rounded-full cursor-pointer absolute"
+            style={{
+              transform: `translateX(${(endTrim / 100) * containerWidth}px)`,
+            }}
+            onMouseDown={(e) => handleDragStart(e, false)}
+            onTouchStart={(e) => handleDragStart(e, false)}
+          ></div>
         </div>
       </div>
     </div>
