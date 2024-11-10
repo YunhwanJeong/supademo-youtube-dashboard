@@ -21,6 +21,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
   const [startTrim, setStartTrim] = useState(0);
   const [endTrim, setEndTrim] = useState(100); // Percentage of the total video length
   const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0); // New state for the current time
   const trimContainerRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -44,12 +45,19 @@ export default function VideoPlayer({ selectedVideo }: Props) {
           onReady: (event: YT.PlayerEvent) => {
             setIsPlaying(false);
             setDuration(event.target.getDuration());
+            // Set initial current time to `startTrim` when video is ready
+            event.target.seekTo(
+              (startTrim / 100) * event.target.getDuration(),
+              true
+            );
+            event.target.pauseVideo();
+            setCurrentTime((startTrim / 100) * event.target.getDuration());
           },
           onStateChange: handlePlayerStateChange,
         },
       })
     );
-  }, [selectedVideo.id.videoId]);
+  }, [selectedVideo.id.videoId, startTrim]);
 
   // Create a debounced save function using the custom debounce utility
   const debouncedSaveTrimToStorage = useCallback(
@@ -61,6 +69,12 @@ export default function VideoPlayer({ selectedVideo }: Props) {
     }), // Adjust delay as needed
     [selectedVideo.id.videoId, startTrim, endTrim]
   );
+
+  useEffect(() => {
+    debouncedSaveTrimToStorage();
+    // Clean up debounce on unmount
+    return () => debouncedSaveTrimToStorage.cancel();
+  }, [startTrim, endTrim, debouncedSaveTrimToStorage]);
 
   // Load trim data from localStorage for the specific video
   useEffect(() => {
@@ -81,12 +95,6 @@ export default function VideoPlayer({ selectedVideo }: Props) {
 
     loadTrimFromStorage();
   }, [selectedVideo.id.videoId]);
-
-  useEffect(() => {
-    debouncedSaveTrimToStorage();
-    // Clean up debounce on unmount
-    return () => debouncedSaveTrimToStorage.cancel();
-  }, [startTrim, endTrim, debouncedSaveTrimToStorage]);
 
   useEffect(() => {
     if (window.YT) {
@@ -198,6 +206,26 @@ export default function VideoPlayer({ selectedVideo }: Props) {
     document.addEventListener("touchend", onStop);
   };
 
+  useEffect(() => {
+    if (!player || !isPlaying) return;
+
+    // Update the current time indicator
+    const interval = setInterval(() => {
+      const currentTime = player.getCurrentTime();
+
+      // Check if currentTime exceeds endTrim and stop video if it does
+      if (currentTime >= (endTrim / 100) * duration) {
+        player.pauseVideo();
+        setIsPlaying(false);
+        setCurrentTime((endTrim / 100) * duration); // Align indicator to endTrim
+      } else {
+        setCurrentTime(currentTime);
+      }
+    }, 500); // Update every 500ms
+
+    return () => clearInterval(interval);
+  }, [isPlaying, player, endTrim, duration]);
+
   return (
     <div className="pb-5">
       <div
@@ -282,6 +310,15 @@ export default function VideoPlayer({ selectedVideo }: Props) {
             }}
             onMouseDown={(e) => handleDragStart(e, false)}
             onTouchStart={(e) => handleDragStart(e, false)}
+          ></div>
+          {/* Current time indicator */}
+          <div
+            className="absolute h-6 w-1 bg-red-600 rounded-full pointer-events-none"
+            style={{
+              transform: `translateX(${
+                (currentTime / duration) * containerWidth
+              }px)`,
+            }}
           ></div>
         </div>
       </div>
