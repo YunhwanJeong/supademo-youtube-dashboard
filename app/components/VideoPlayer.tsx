@@ -42,6 +42,8 @@ export default function VideoPlayer({ selectedVideo }: Props) {
           rel: 0,
           modestbranding: 1,
           enablejsapi: 1,
+          iv_load_policy: 3,
+          disablekb: 1,
         },
         events: {
           onReady: () => setIsPlaying(false),
