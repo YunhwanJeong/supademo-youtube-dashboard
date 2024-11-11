@@ -61,10 +61,10 @@ The application should now be running on http://localhost:3000.
   - Test across different devices to experience the adaptive layout.
 
 ## Highlights
+- Enhanced UI/UX
+  - Smooth interactions, persistent trim settings, and real-time playback feedback.
+  - Infinite scrolling for a seamless video browsing experience.
 - Custom Hooks
   - Encapsulated logic for separating business logics with ui components.
 - Component-Based Design
   - Modular and reusable components for scalability.
-- Enhanced UX
-  - Smooth interactions, persistent trim settings, and real-time playback feedback.
-  - Infinite scrolling for a seamless video browsing experience.
