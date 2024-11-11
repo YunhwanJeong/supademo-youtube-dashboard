@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from "react";
 interface Props {
   player: YT.Player | null;
   videoId: string;
-  onPlayerInit: (player: YT.Player) => void;
+  setPlayerInstance: (player: YT.Player) => void;
   onReady: (event: YT.PlayerEvent) => void;
   onStateChange: (event: YT.OnStateChangeEvent) => void;
 }
@@ -11,7 +11,7 @@ interface Props {
 export default function YouTubePlayer({
   player,
   videoId,
-  onPlayerInit,
+  setPlayerInstance,
   onReady,
   onStateChange,
 }: Props) {
@@ -21,7 +21,7 @@ export default function YouTubePlayer({
     if (playerRef.current === null) return;
     if (player) player.destroy(); // Destroy existing player if re-rendered
 
-    onPlayerInit(
+    setPlayerInstance(
       new window.YT.Player(playerRef.current, {
         videoId,
         playerVars: {
