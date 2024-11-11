@@ -1,12 +1,19 @@
 interface Props {
   isPlaying: boolean;
+  onBackwordClick: () => void;
   onPlaybackClick: () => void;
+  onForwardClick: () => void;
 }
 
-export default function VideoControls({ isPlaying, onPlaybackClick }: Props) {
+export default function VideoControls({
+  isPlaying,
+  onBackwordClick,
+  onPlaybackClick,
+  onForwardClick,
+}: Props) {
   return (
     <div className="p-1 flex justify-center gap-x-5 bg-slate-300 rounded-xl mb-3">
-      <button>
+      <button onClick={onBackwordClick}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -38,7 +45,7 @@ export default function VideoControls({ isPlaying, onPlaybackClick }: Props) {
           )}
         </svg>
       </button>
-      <button>
+      <button onClick={onForwardClick}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"

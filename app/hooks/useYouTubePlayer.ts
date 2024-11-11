@@ -43,26 +43,34 @@ export function useYouTubePlayer({ startTrim, endTrim }: Params) {
     },
     []
   );
-
+  // Adjust currentTime if it exceeds endTrim
+  useEffect(() => {
+    if (!player) return;
+    if (currentTime > (endTrim / 100) * duration) {
+      setIsPlaying(false);
+      player.seekTo((endTrim / 100) * duration, true);
+      player.pauseVideo();
+      setCurrentTime((endTrim / 100) * duration);
+    }
+  }, [endTrim, player]);
+  // Pause video if currentTime exceeds endTrim
   useEffect(() => {
     if (
       player &&
       isPlaying &&
-      typeof player.getCurrentTime === "function" && // Ensure getCurrentTime is a function
+      typeof player.getCurrentTime === "function" &&
       player.getCurrentTime() >= (endTrim * duration) / 100
     ) {
       player.pauseVideo();
       setIsPlaying(false);
     }
   }, [endTrim, isPlaying, player, duration]);
-
+  // Update the current time indicator
   useEffect(() => {
     if (!player || !isPlaying) return;
 
-    // Update the current time indicator
     const interval = setInterval(() => {
       const currentTime = player.getCurrentTime();
-
       // Check if currentTime exceeds endTrim and stop video if it does
       if (currentTime >= (endTrim / 100) * duration) {
         player.pauseVideo();
@@ -84,6 +92,7 @@ export function useYouTubePlayer({ startTrim, endTrim }: Params) {
     currentTime,
     setPlayerInstance,
     setIsPlayerReady,
+    setCurrentTime,
     handlePlayerReady,
     handlePlayerStateChange,
   };

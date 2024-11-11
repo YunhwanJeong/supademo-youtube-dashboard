@@ -29,16 +29,21 @@ export default function VideoPlayer({ selectedVideo }: Props) {
     currentTime,
     setPlayerInstance,
     setIsPlayerReady,
+    setCurrentTime,
     handlePlayerReady,
     handlePlayerStateChange,
   } = useYouTubePlayer({ startTrim, endTrim });
 
-  const { handlePlayback } = useVideoControls({
-    player,
-    isPlaying,
-    startTrim,
-    duration,
-  });
+  const { handleBackwordClick, handlePlaybackClick, handleForwardClick } =
+    useVideoControls({
+      player,
+      isPlaying,
+      startTrim,
+      endTrim,
+      duration,
+      currentTime,
+      setCurrentTime,
+    });
 
   return (
     <div className="pb-5 lg:self-center lg:w-7/12 lg:max-w-screen-lg lg:my-0 lg:mx-auto">
@@ -52,7 +57,12 @@ export default function VideoPlayer({ selectedVideo }: Props) {
       />
 
       <div className="px-5 lg:p-0">
-        <VideoControls isPlaying={isPlaying} onPlaybackClick={handlePlayback} />
+        <VideoControls
+          isPlaying={isPlaying}
+          onBackwordClick={handleBackwordClick}
+          onPlaybackClick={handlePlaybackClick}
+          onForwardClick={handleForwardClick}
+        />
 
         <TrimBar
           startTrim={startTrim}
