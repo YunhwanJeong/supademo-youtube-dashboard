@@ -19,36 +19,48 @@ export function useYouTubePlayer({
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
 
+  const seekToTime = useCallback(
+    (time: number) => {
+      if (!player || !isPlayerReady) return;
+      setIsPlaying(false);
+      player.seekTo(time, true);
+      player.pauseVideo();
+      setCurrentTime(time);
+    },
+    [player, isPlayerReady]
+  );
+
+  const togglePlayBack = useCallback(() => {
+    if (!player) return;
+    if (isPlaying) {
+      player.pauseVideo();
+      return;
+    }
+
+    player.seekTo(currentTime, true);
+    player.playVideo();
+  }, [currentTime, isPlaying, player]);
+
   // Sync the player's currentTime with startTrim when the player is ready to play.
   useEffect(() => {
-    if (!player || !isPlayerReady) return;
-    setIsPlaying(false);
-    player.seekTo((startTrim / 100) * duration, true);
-    player.pauseVideo();
-    setCurrentTime((startTrim / 100) * duration);
-  }, [player, isPlayerReady]);
+    seekToTime((startTrim / 100) * duration);
+  }, [seekToTime]);
 
   // Prevent currentTime from going below startTrim when startTrim is dragging.
   useEffect(() => {
-    if (!player || !isPlayerReady || !isDragging) return;
+    if (!isDragging) return;
     if (currentTime < (startTrim / 100) * duration) {
-      setIsPlaying(false);
-      player.seekTo((startTrim / 100) * duration, true);
-      player.pauseVideo();
-      setCurrentTime((startTrim / 100) * duration);
+      seekToTime((startTrim / 100) * duration);
     }
-  }, [startTrim, isDragging]);
+  }, [startTrim, isDragging, seekToTime]);
 
   // Prevent currentTime from going above endTrim when endTrim is dragging.
   useEffect(() => {
-    if (!player || !isPlayerReady || !isDragging) return;
+    if (!isDragging) return;
     if (currentTime > (endTrim / 100) * duration) {
-      setIsPlaying(false);
-      player.seekTo((endTrim / 100) * duration, true);
-      player.pauseVideo();
-      setCurrentTime((endTrim / 100) * duration);
+      seekToTime((endTrim / 100) * duration);
     }
-  }, [endTrim, isDragging]);
+  }, [endTrim, isDragging, seekToTime]);
 
   // Pause video when currentTime exceeds endTrim during playback.
   useEffect(() => {
@@ -71,16 +83,14 @@ export function useYouTubePlayer({
       const currentTime = player.getCurrentTime();
       // Check if currentTime exceeds endTrim and stop video if it does
       if (currentTime >= (endTrim / 100) * duration) {
-        player.pauseVideo();
-        setIsPlaying(false);
-        setCurrentTime((endTrim / 100) * duration); // Align indicator to endTrim
+        seekToTime((endTrim / 100) * duration);
       } else {
         setCurrentTime(currentTime);
       }
     }, 500); // Update every 500ms
 
     return () => clearInterval(interval);
-  }, [isPlaying, player, endTrim, duration]);
+  }, [isPlaying, seekToTime, endTrim, duration]);
 
   const handlePlayerInitialize = useCallback(
     (player: YT.Player) => {
@@ -115,28 +125,6 @@ export function useYouTubePlayer({
     },
     []
   );
-
-  const seekToTime = useCallback(
-    (time: number) => {
-      if (!player) return;
-
-      player.seekTo(time, true);
-      player.pauseVideo();
-      setCurrentTime(time);
-    },
-    [player]
-  );
-
-  const togglePlayBack = useCallback(() => {
-    if (!player) return;
-    if (isPlaying) {
-      player.pauseVideo();
-      return;
-    }
-
-    player.seekTo(currentTime, true);
-    player.playVideo();
-  }, [currentTime, isPlaying, player]);
 
   return {
     player,
