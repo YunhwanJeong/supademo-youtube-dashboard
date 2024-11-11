@@ -4,6 +4,7 @@ interface Props {
   player: YT.Player | null;
   videoId: string;
   setPlayerInstance: (player: YT.Player) => void;
+  setIsPlayerReady: (isReady: boolean) => void;
   onReady: (event: YT.PlayerEvent) => void;
   onStateChange: (event: YT.OnStateChangeEvent) => void;
 }
@@ -12,6 +13,7 @@ export default function YouTubePlayer({
   player,
   videoId,
   setPlayerInstance,
+  setIsPlayerReady,
   onReady,
   onStateChange,
 }: Props) {
@@ -21,6 +23,7 @@ export default function YouTubePlayer({
     if (playerRef.current === null) return;
     if (player) player.destroy(); // Destroy existing player if re-rendered
 
+    setIsPlayerReady(false);
     setPlayerInstance(
       new window.YT.Player(playerRef.current, {
         videoId,

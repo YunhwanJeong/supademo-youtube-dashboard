@@ -5,6 +5,7 @@ interface Props {
   endTrim: number;
   currentTime: number;
   duration: number;
+  isPlayerReady: boolean;
   onDragStart: (
     e: React.MouseEvent | React.TouchEvent,
     isStart: boolean,
@@ -17,6 +18,7 @@ export default function TrimBar({
   endTrim,
   currentTime,
   duration,
+  isPlayerReady,
   onDragStart,
 }: Props) {
   const [containerWidth, setContainerWidth] = useState(0);
@@ -71,14 +73,16 @@ export default function TrimBar({
         onTouchStart={(e) => onDragStart(e, false, trimContainerRef)}
       ></div>
       {/* Current time indicator */}
-      <div
-        className="absolute h-6 w-1 bg-red-600 rounded-full pointer-events-none"
-        style={{
-          transform: `translateX(${
-            (currentTime / duration) * containerWidth
-          }px)`,
-        }}
-      ></div>
+      {isPlayerReady && (
+        <div
+          className="absolute h-6 w-1 bg-red-600 rounded-full pointer-events-none"
+          style={{
+            transform: `translateX(${
+              (currentTime / duration) * containerWidth
+            }px)`,
+          }}
+        ></div>
+      )}
     </div>
   );
 }

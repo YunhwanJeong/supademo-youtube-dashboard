@@ -24,9 +24,11 @@ export default function VideoPlayer({ selectedVideo }: Props) {
   const {
     player,
     isPlaying,
+    isPlayerReady,
     duration,
     currentTime,
     setPlayerInstance,
+    setIsPlayerReady,
     handlePlayerReady,
     handlePlayerStateChange,
   } = useYouTubePlayer({ startTrim, endTrim });
@@ -44,6 +46,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
         player={player}
         videoId={selectedVideo.id.videoId}
         setPlayerInstance={setPlayerInstance}
+        setIsPlayerReady={setIsPlayerReady}
         onReady={handlePlayerReady}
         onStateChange={handlePlayerStateChange}
       />
@@ -56,6 +59,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
           endTrim={endTrim}
           currentTime={currentTime}
           duration={duration}
+          isPlayerReady={isPlayerReady}
           onDragStart={handleDragStart}
         />
       </div>

@@ -8,6 +8,7 @@ interface Params {
 export function useYouTubePlayer({ startTrim, endTrim }: Params) {
   const [player, setPlayer] = useState<YT.Player | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlayerReady, setIsPlayerReady] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0); // New state for the current time
 
@@ -17,6 +18,7 @@ export function useYouTubePlayer({ startTrim, endTrim }: Params) {
 
   const handlePlayerReady = useCallback(
     (event: YT.PlayerEvent) => {
+      setIsPlayerReady(true);
       setIsPlaying(false);
       setDuration(event.target.getDuration());
       // Set initial current time to `startTrim` when video is ready
@@ -77,9 +79,11 @@ export function useYouTubePlayer({ startTrim, endTrim }: Params) {
   return {
     player,
     isPlaying,
+    isPlayerReady,
     duration,
     currentTime,
     setPlayerInstance,
+    setIsPlayerReady,
     handlePlayerReady,
     handlePlayerStateChange,
   };
