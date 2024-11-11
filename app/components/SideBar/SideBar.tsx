@@ -23,10 +23,10 @@ export default function SideBar({
   const { observerRef } = useInfiniteScroll({ onIntersect: loadMore });
 
   return (
-    <aside className="flex flex-col gap-y-6 w-full order-2 p-5 border-t border-gray-100 lg:-order-none lg:w-96 lg:border-t-0 lg:border-r lg:overflow-y-auto lg:max-h-sidebar">
+    <aside className="flex flex-col gap-y-3 w-full order-2 border-t border-gray-100 lg:-order-none lg:w-96 lg:border-t-0 lg:border-r lg:overflow-y-auto lg:max-h-sidebar">
       <SearchBar onSearch={handleSearch} />
 
-      <div className="flex flex-col gap-y-3">
+      <div className="flex flex-col gap-y-3 px-5 pb-5">
         {videos.map((video) => (
           <VideoItem
             key={`${video.id.kind}${video.id.videoId}`}
