@@ -20,16 +20,12 @@ export function useVideoControls({
   seekToTime,
 }: Params) {
   const handleBackwordClick = useCallback(() => {
-    if (!player) return;
-
     seekToTime((startTrim * duration) / 100);
-  }, [player, seekToTime, startTrim, duration]);
+  }, [seekToTime, startTrim, duration]);
 
   const handleForwardClick = useCallback(() => {
-    if (!player) return;
-
     seekToTime((endTrim * duration) / 100);
-  }, [player, seekToTime, endTrim, duration]);
+  }, [seekToTime, endTrim, duration]);
 
   const handlePlaybackClick = useCallback(() => {
     if (!player) return;
