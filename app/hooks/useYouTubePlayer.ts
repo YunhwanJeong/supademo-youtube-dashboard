@@ -13,10 +13,6 @@ export function useYouTubePlayer({ startTrim, endTrim, isDragging }: Params) {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0); // New state for the current time
 
-  const setPlayerInstance = useCallback((player: YT.Player) => {
-    setPlayer(player);
-  }, []);
-
   const handlePlayerReady = useCallback((event: YT.PlayerEvent) => {
     setIsPlayerReady(true);
     setIsPlaying(false);
@@ -106,7 +102,7 @@ export function useYouTubePlayer({ startTrim, endTrim, isDragging }: Params) {
     isPlayerReady,
     duration,
     currentTime,
-    setPlayerInstance,
+    setPlayer,
     setIsPlayerReady,
     setCurrentTime,
     handlePlayerReady,

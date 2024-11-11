@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { Dispatch, SetStateAction, useCallback } from "react";
 
 interface Params {
   player: YT.Player | null;
@@ -7,7 +7,7 @@ interface Params {
   endTrim: number;
   duration: number;
   currentTime: number;
-  setCurrentTime: (time: number) => void;
+  setCurrentTime: Dispatch<SetStateAction<number>>;
 }
 
 export function useVideoControls({

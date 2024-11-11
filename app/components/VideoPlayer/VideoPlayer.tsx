@@ -33,7 +33,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
     isPlayerReady,
     duration,
     currentTime,
-    setPlayerInstance,
+    setPlayer,
     setIsPlayerReady,
     setCurrentTime,
     handlePlayerReady,
@@ -56,7 +56,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
       <YouTubePlayer
         player={player}
         videoId={selectedVideo.id.videoId}
-        setPlayerInstance={setPlayerInstance}
+        setPlayer={setPlayer}
         setIsPlayerReady={setIsPlayerReady}
         loadTrimFromStorage={loadTrimFromStorage}
         onReady={handlePlayerReady}

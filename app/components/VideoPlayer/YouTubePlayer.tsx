@@ -1,10 +1,16 @@
-import { useCallback, useEffect, useRef } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 
 interface Props {
   player: YT.Player | null;
   videoId: string;
-  setPlayerInstance: (player: YT.Player) => void;
-  setIsPlayerReady: (isReady: boolean) => void;
+  setPlayer: Dispatch<SetStateAction<YT.Player | null>>;
+  setIsPlayerReady: Dispatch<SetStateAction<boolean>>;
   loadTrimFromStorage: () => void;
   onReady: (event: YT.PlayerEvent) => void;
   onStateChange: (event: YT.OnStateChangeEvent) => void;
@@ -13,7 +19,7 @@ interface Props {
 export default function YouTubePlayer({
   player,
   videoId,
-  setPlayerInstance,
+  setPlayer,
   setIsPlayerReady,
   loadTrimFromStorage,
   onReady,
@@ -26,7 +32,7 @@ export default function YouTubePlayer({
 
     loadTrimFromStorage();
     setIsPlayerReady(false);
-    setPlayerInstance(
+    setPlayer(
       new window.YT.Player(playerRef.current, {
         videoId,
         playerVars: {
