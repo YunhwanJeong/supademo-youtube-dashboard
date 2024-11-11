@@ -12,6 +12,9 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      maxHeight: {
+        sidebar: "calc(100vh - 3.5rem)",
+      },
     },
   },
   plugins: [],

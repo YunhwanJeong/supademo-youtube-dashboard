@@ -19,7 +19,7 @@ export default function SearchBar({ onSearch }: Props) {
   };
 
   return (
-    <div className="flex items-center w-full bg-white border border-gray-300 rounded-full shadow-sm overflow-hidden focus-within:border-indigo-500">
+    <div className="flex items-center w-full bg-white border border-gray-300 rounded-full shadow-sm overflow-hidden focus-within:border-indigo-500 lg:min-h-12">
       <div className="pl-4 text-gray-400">
         <svg
           xmlns="http://www.w3.org/2000/svg"

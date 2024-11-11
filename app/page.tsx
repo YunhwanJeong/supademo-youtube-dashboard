@@ -1,6 +1,6 @@
 "use client";
 import rawVideoData from "@/app/data/data.json";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SideBar from "./components/SideBar/SideBar";
 import VideoPlayer from "./components/VideoPlayer/VideoPlayer";
 import { VideoItemType } from "./types/videoTypes";
@@ -16,8 +16,15 @@ export default function Home() {
     setSelectedVideo(video);
   };
 
+  useEffect(() => {
+    document.body.classList.add("lg:overflow-hidden");
+    return () => {
+      document.body.classList.remove("lg:overflow-hidden");
+    };
+  }, []);
+
   return (
-    <main className="flex flex-col">
+    <main className="flex flex-col lg:flex-row lg:border-b">
       <SideBar
         rawVideos={rawVideos}
         selectedVideo={selectedVideo}

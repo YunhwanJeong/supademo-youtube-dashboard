@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased bg-white`}>
-        <header className="p-5 border-b border-slate-300">
+        <header className="p-5 border-b border-slate-300 h-14">
           <Link href="/">
             <Image src={supademoLogo} alt="Supademo logo" width={112} />
           </Link>

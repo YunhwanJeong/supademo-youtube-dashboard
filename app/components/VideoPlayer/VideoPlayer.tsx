@@ -41,7 +41,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
   });
 
   return (
-    <div className="pb-5">
+    <div className="pb-5 lg:flex-1">
       <YouTubePlayer
         player={player}
         videoId={selectedVideo.id.videoId}
