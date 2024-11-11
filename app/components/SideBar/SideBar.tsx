@@ -26,7 +26,7 @@ export default function SideBar({
     <aside className="flex flex-col gap-y-6 w-full order-2 p-5 border-t border-gray-100 lg:-order-none lg:w-96 lg:border-t-0 lg:border-r lg:overflow-y-auto lg:max-h-sidebar">
       <SearchBar onSearch={handleSearch} />
 
-      <div className="flex flex-col gap-y-5 ">
+      <div className="flex flex-col gap-y-3">
         {videos.map((video) => (
           <VideoItem
             key={`${video.id.kind}${video.id.videoId}`}

@@ -39,14 +39,22 @@ export default function TrimBar({
     return () => window.removeEventListener("resize", handleResize);
   }, [trimContainerRef]);
 
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60)
+      .toString()
+      .padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  };
+
   return (
     <div
       ref={trimContainerRef}
-      className="relative w-full bg-gray-200 h-4 rounded-md flex items-center"
+      className="relative w-full bg-gray-200 h-10 rounded-md flex items-center"
     >
       {/* Trimmed background */}
       <div
-        className="h-full bg-indigo-700 bg-opacity-30 absolute"
+        className="h-full bg-indigo-700 bg-opacity-30 absolute pointer-events-none"
         style={{
           transform: `translateX(${(startTrim / 100) * containerWidth}px)`,
           width: `${((endTrim - startTrim) / 100) * containerWidth}px`,
@@ -55,7 +63,7 @@ export default function TrimBar({
 
       {/* Start trim handle */}
       <div
-        className="h-6 w-2 bg-indigo-700 rounded-full cursor-pointer absolute"
+        className="h-11 w-2 bg-indigo-700 rounded-full cursor-pointer absolute"
         style={{
           transform: `translateX(${(startTrim / 100) * containerWidth}px)`,
         }}
@@ -65,7 +73,7 @@ export default function TrimBar({
 
       {/* End trim handle */}
       <div
-        className="h-6 w-2 bg-indigo-700 rounded-full cursor-pointer absolute"
+        className="h-11 w-2 bg-indigo-700 rounded-full cursor-pointer absolute"
         style={{
           transform: `translateX(${(endTrim / 100) * containerWidth}px)`,
         }}
@@ -74,14 +82,20 @@ export default function TrimBar({
       ></div>
       {/* Current time indicator */}
       {isPlayerReady && (
-        <div
-          className="absolute h-6 w-1 bg-red-600 rounded-full pointer-events-none"
-          style={{
-            transform: `translateX(${
-              (currentTime / duration) * containerWidth
-            }px)`,
-          }}
-        ></div>
+        <>
+          <div
+            className="absolute h-11 w-1 bg-red-600 rounded-full pointer-events-none"
+            style={{
+              transform: `translateX(${
+                (currentTime / duration) * containerWidth
+              }px)`,
+            }}
+          >
+            <div className="absolute -bottom-[2px] left-0 -translate-x-1/2 translate-y-full bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded shadow-md pointer-events-none">
+              {formatTime(currentTime)}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
