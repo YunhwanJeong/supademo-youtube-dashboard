@@ -2,7 +2,7 @@
 import rawVideoData from "@/app/data/data.json";
 import { useState } from "react";
 import SideBar from "./components/SideBar/SideBar";
-import VideoPlayer from "./components/VideoPlayer";
+import VideoPlayer from "./components/VideoPlayer/VideoPlayer";
 import { VideoItemType } from "./types/videoTypes";
 
 const rawVideos = rawVideoData.items as VideoItemType[];
