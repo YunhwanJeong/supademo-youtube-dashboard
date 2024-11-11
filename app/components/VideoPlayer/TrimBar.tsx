@@ -1,3 +1,4 @@
+import { calculatePercentage } from "@/app/utils";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 
 interface Props {
@@ -57,8 +58,14 @@ export default function TrimBar({
       <div
         className="h-full bg-indigo-700 bg-opacity-30 absolute pointer-events-none"
         style={{
-          transform: `translateX(${(startTrim / 100) * containerWidth}px)`,
-          width: `${((endTrim - startTrim) / 100) * containerWidth}px`,
+          transform: `translateX(${calculatePercentage(
+            startTrim,
+            containerWidth
+          )}px)`,
+          width: `${calculatePercentage(
+            endTrim - startTrim,
+            containerWidth
+          )}px`,
         }}
       ></div>
 
@@ -66,7 +73,10 @@ export default function TrimBar({
       <div
         className="h-11 w-2 bg-indigo-700 rounded-full cursor-pointer absolute"
         style={{
-          transform: `translateX(${(startTrim / 100) * containerWidth}px)`,
+          transform: `translateX(${calculatePercentage(
+            startTrim,
+            containerWidth
+          )}px)`,
         }}
         onMouseDown={(e) => onDragStart(e, true, trimContainerRef)}
         onTouchStart={(e) => onDragStart(e, true, trimContainerRef)}
@@ -76,7 +86,10 @@ export default function TrimBar({
       <div
         className="h-11 w-2 bg-indigo-700 rounded-full cursor-pointer absolute"
         style={{
-          transform: `translateX(${(endTrim / 100) * containerWidth}px)`,
+          transform: `translateX(${calculatePercentage(
+            endTrim,
+            containerWidth
+          )}px)`,
         }}
         onMouseDown={(e) => onDragStart(e, false, trimContainerRef)}
         onTouchStart={(e) => onDragStart(e, false, trimContainerRef)}

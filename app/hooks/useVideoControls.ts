@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { calculatePercentage } from "../utils";
 
 interface Params {
   player: YT.Player | null;
@@ -19,11 +20,11 @@ export function useVideoControls({
   togglePlayBack,
 }: Params) {
   const handleBackwordClick = useCallback(() => {
-    seekToTime((startTrim * duration) / 100);
+    seekToTime(calculatePercentage(startTrim, duration));
   }, [seekToTime, startTrim, duration]);
 
   const handleForwardClick = useCallback(() => {
-    seekToTime((endTrim * duration) / 100);
+    seekToTime(calculatePercentage(endTrim, duration));
   }, [seekToTime, endTrim, duration]);
 
   const handlePlaybackClick = useCallback(() => {

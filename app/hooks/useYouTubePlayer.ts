@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { calculatePercentage } from "../utils";
 
 interface Params {
   startTrim: number;
@@ -43,22 +44,22 @@ export function useYouTubePlayer({
 
   // Sync the player's currentTime with startTrim when the player is ready to play.
   useEffect(() => {
-    seekToTime((startTrim / 100) * duration);
+    seekToTime(calculatePercentage(startTrim, duration));
   }, [seekToTime]);
 
   // Prevent currentTime from going below startTrim when startTrim is dragging.
   useEffect(() => {
     if (!isDragging) return;
-    if (currentTime < (startTrim / 100) * duration) {
-      seekToTime((startTrim / 100) * duration);
+    if (currentTime < calculatePercentage(startTrim, duration)) {
+      seekToTime(calculatePercentage(startTrim, duration));
     }
   }, [startTrim, isDragging, seekToTime]);
 
   // Prevent currentTime from going above endTrim when endTrim is dragging.
   useEffect(() => {
     if (!isDragging) return;
-    if (currentTime > (endTrim / 100) * duration) {
-      seekToTime((endTrim / 100) * duration);
+    if (currentTime > calculatePercentage(endTrim, duration)) {
+      seekToTime(calculatePercentage(endTrim, duration));
     }
   }, [endTrim, isDragging, seekToTime]);
 
@@ -68,7 +69,7 @@ export function useYouTubePlayer({
       player &&
       isPlaying &&
       typeof player.getCurrentTime === "function" &&
-      player.getCurrentTime() >= (endTrim * duration) / 100
+      player.getCurrentTime() >= calculatePercentage(endTrim, duration)
     ) {
       player.pauseVideo();
       setIsPlaying(false);
@@ -82,8 +83,8 @@ export function useYouTubePlayer({
     const interval = setInterval(() => {
       const currentTime = player.getCurrentTime();
       // Check if currentTime exceeds endTrim and stop video if it does
-      if (currentTime >= (endTrim / 100) * duration) {
-        seekToTime((endTrim / 100) * duration);
+      if (currentTime >= calculatePercentage(endTrim, duration)) {
+        seekToTime(calculatePercentage(endTrim, duration));
       } else {
         setCurrentTime(currentTime);
       }
