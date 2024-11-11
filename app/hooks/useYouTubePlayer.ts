@@ -37,6 +37,8 @@ export function useYouTubePlayer({
       player.pauseVideo();
       return;
     }
+    // Don't play the video if currentTime is at the end of the video duration
+    if (currentTime >= duration) return;
 
     player.seekTo(currentTime, true);
     player.playVideo();
