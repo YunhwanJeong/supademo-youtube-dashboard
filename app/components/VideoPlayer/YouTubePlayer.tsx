@@ -5,6 +5,7 @@ interface Props {
   videoId: string;
   setPlayerInstance: (player: YT.Player) => void;
   setIsPlayerReady: (isReady: boolean) => void;
+  loadTrimFromStorage: () => void;
   onReady: (event: YT.PlayerEvent) => void;
   onStateChange: (event: YT.OnStateChangeEvent) => void;
 }
@@ -14,15 +15,16 @@ export default function YouTubePlayer({
   videoId,
   setPlayerInstance,
   setIsPlayerReady,
+  loadTrimFromStorage,
   onReady,
   onStateChange,
 }: Props) {
   const playerRef = useRef<HTMLDivElement | null>(null);
-
   const initializePlayer = useCallback(() => {
     if (playerRef.current === null) return;
     if (player) player.destroy(); // Destroy existing player if re-rendered
 
+    loadTrimFromStorage();
     setIsPlayerReady(false);
     setPlayerInstance(
       new window.YT.Player(playerRef.current, {
@@ -42,7 +44,7 @@ export default function YouTubePlayer({
         },
       })
     );
-  }, [videoId, onReady]);
+  }, [videoId]);
 
   useEffect(() => {
     if (window.YT) {

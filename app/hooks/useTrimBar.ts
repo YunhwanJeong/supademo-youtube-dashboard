@@ -9,25 +9,21 @@ interface Params {
 export function useTrimBar({ videoId }: Params) {
   const [startTrim, setStartTrim] = useState(0);
   const [endTrim, setEndTrim] = useState(100); // Percentage of the total video length
+  const [isDragging, setIsDragging] = useState(false);
 
   // Load trim data from localStorage for the specific video
-  useEffect(() => {
-    const loadTrimFromStorage = () => {
-      const storedTrim = localStorage.getItem(`trim_${videoId}`);
-      if (storedTrim) {
-        const { startTrim, endTrim } = JSON.parse(storedTrim);
-        setStartTrim(startTrim);
-        setEndTrim(endTrim);
-      } else {
-        // Default values if no saved trim data exists for this video
-        setStartTrim(0);
-        setEndTrim(100);
-      }
-    };
-
-    loadTrimFromStorage();
-  }, [videoId]);
-
+  const loadTrimFromStorage = () => {
+    const storedTrim = localStorage.getItem(`trim_${videoId}`);
+    if (storedTrim) {
+      const { startTrim, endTrim } = JSON.parse(storedTrim);
+      setStartTrim(startTrim);
+      setEndTrim(endTrim);
+    } else {
+      // Default values if no saved trim data exists for this video
+      setStartTrim(0);
+      setEndTrim(100);
+    }
+  };
   // Create a debounced save function using the custom debounce utility
   const debouncedSaveTrimToStorage = useCallback(
     debounce(() => {
@@ -43,7 +39,7 @@ export function useTrimBar({ videoId }: Params) {
     debouncedSaveTrimToStorage();
     // Clean up debounce on unmount
     return () => debouncedSaveTrimToStorage.cancel();
-  }, [startTrim, endTrim, debouncedSaveTrimToStorage]);
+  }, [debouncedSaveTrimToStorage]);
 
   const handleDragStart = (
     e: React.MouseEvent | React.TouchEvent,
@@ -72,9 +68,11 @@ export function useTrimBar({ videoId }: Params) {
     };
     // Event listeners for mouse and touch
     const onMove = (event: MouseEvent | TouchEvent) => {
+      setIsDragging(true);
       calculatePosition(event);
     };
     const onStop = () => {
+      setIsDragging(false);
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseup", onStop);
       document.removeEventListener("touchmove", onMove);
@@ -90,6 +88,8 @@ export function useTrimBar({ videoId }: Params) {
   return {
     startTrim,
     endTrim,
+    isDragging,
+    loadTrimFromStorage,
     handleDragStart,
   };
 }

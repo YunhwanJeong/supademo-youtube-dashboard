@@ -3,9 +3,10 @@ import { useCallback, useEffect, useState } from "react";
 interface Params {
   startTrim: number;
   endTrim: number;
+  isDragging: boolean;
 }
 
-export function useYouTubePlayer({ startTrim, endTrim }: Params) {
+export function useYouTubePlayer({ startTrim, endTrim, isDragging }: Params) {
   const [player, setPlayer] = useState<YT.Player | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
@@ -16,25 +17,21 @@ export function useYouTubePlayer({ startTrim, endTrim }: Params) {
     setPlayer(player);
   }, []);
 
-  const handlePlayerReady = useCallback(
-    (event: YT.PlayerEvent) => {
-      setIsPlayerReady(true);
-      setIsPlaying(false);
-      setDuration(event.target.getDuration());
-      // Set initial current time to `startTrim` when video is ready
-      event.target.seekTo((startTrim / 100) * event.target.getDuration(), true);
-      event.target.pauseVideo();
-      setCurrentTime((startTrim / 100) * event.target.getDuration());
-    },
-    [startTrim]
-  );
+  const handlePlayerReady = useCallback((event: YT.PlayerEvent) => {
+    setIsPlayerReady(true);
+    setIsPlaying(false);
+    setDuration(event.target.getDuration());
+  }, []);
 
   const handlePlayerStateChange = useCallback(
     (event: YT.OnStateChangeEvent) => {
       const { YT } = window;
       if (event.data === YT.PlayerState.PLAYING) {
         setIsPlaying(true);
-      } else if (
+        return;
+      }
+
+      if (
         event.data === YT.PlayerState.PAUSED ||
         event.data === YT.PlayerState.ENDED
       ) {
@@ -43,16 +40,35 @@ export function useYouTubePlayer({ startTrim, endTrim }: Params) {
     },
     []
   );
-  // Adjust currentTime if it exceeds endTrim
+  // Update the player's current time when the player is ready at the first render
   useEffect(() => {
-    if (!player) return;
+    if (!player || !isPlayerReady) return;
+
+    setIsPlaying(false);
+    player.seekTo((startTrim / 100) * duration, true);
+    player.pauseVideo();
+    setCurrentTime((startTrim / 100) * duration);
+  }, [player, isPlayerReady]);
+  // This is to prevent currentTime from falling below startTrim while dragging.
+  useEffect(() => {
+    if (!player || !isPlayerReady || !isDragging) return;
+    if (currentTime < (startTrim / 100) * duration) {
+      setIsPlaying(false);
+      player.seekTo((startTrim / 100) * duration, true);
+      player.pauseVideo();
+      setCurrentTime((startTrim / 100) * duration);
+    }
+  }, [startTrim, isDragging]);
+  // This is to prevent the currentTime from exceeding endTrim while dragging.
+  useEffect(() => {
+    if (!player || !isPlayerReady || !isDragging) return;
     if (currentTime > (endTrim / 100) * duration) {
       setIsPlaying(false);
       player.seekTo((endTrim / 100) * duration, true);
       player.pauseVideo();
       setCurrentTime((endTrim / 100) * duration);
     }
-  }, [endTrim, player]);
+  }, [endTrim, isDragging]);
   // Pause video if currentTime exceeds endTrim
   useEffect(() => {
     if (
@@ -65,7 +81,7 @@ export function useYouTubePlayer({ startTrim, endTrim }: Params) {
       setIsPlaying(false);
     }
   }, [endTrim, isPlaying, player, duration]);
-  // Update the current time indicator
+  // Update the current time indicator while playing
   useEffect(() => {
     if (!player || !isPlaying) return;
 

@@ -17,7 +17,13 @@ interface Props {
 }
 
 export default function VideoPlayer({ selectedVideo }: Props) {
-  const { startTrim, endTrim, handleDragStart } = useTrimBar({
+  const {
+    startTrim,
+    endTrim,
+    isDragging,
+    loadTrimFromStorage,
+    handleDragStart,
+  } = useTrimBar({
     videoId: selectedVideo.id.videoId,
   });
 
@@ -32,7 +38,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
     setCurrentTime,
     handlePlayerReady,
     handlePlayerStateChange,
-  } = useYouTubePlayer({ startTrim, endTrim });
+  } = useYouTubePlayer({ startTrim, endTrim, isDragging });
 
   const { handleBackwordClick, handlePlaybackClick, handleForwardClick } =
     useVideoControls({
@@ -52,6 +58,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
         videoId={selectedVideo.id.videoId}
         setPlayerInstance={setPlayerInstance}
         setIsPlayerReady={setIsPlayerReady}
+        loadTrimFromStorage={loadTrimFromStorage}
         onReady={handlePlayerReady}
         onStateChange={handlePlayerStateChange}
       />
