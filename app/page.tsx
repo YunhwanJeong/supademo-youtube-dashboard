@@ -1,4 +1,5 @@
 "use client";
+
 import rawVideoData from "@/app/data/data.json";
 import { useEffect, useState } from "react";
 import SideBar from "./components/SideBar/SideBar";
