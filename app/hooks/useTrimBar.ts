@@ -11,7 +11,7 @@ export function useTrimBar({ videoId }: Params) {
   const [endTrim, setEndTrim] = useState(100); // Percentage of the total video length
   const [isDragging, setIsDragging] = useState(false);
 
-  // Load trim data from localStorage for the specific video
+  // Loads saved trim data from localStorage for the specific video
   const loadTrimFromStorage = () => {
     const storedTrim = localStorage.getItem(`trim_${videoId}`);
     if (storedTrim) {
@@ -24,17 +24,19 @@ export function useTrimBar({ videoId }: Params) {
       setEndTrim(100);
     }
   };
-  // Create a debounced save function using the custom debounce utility
+
+  // Debounced function to save trim values to localStorage
   const debouncedSaveTrimToStorage = useCallback(
     debounce(() => {
       localStorage.setItem(
         `trim_${videoId}`,
         JSON.stringify({ startTrim, endTrim })
       );
-    }), // Adjust delay as needed
+    }),
     [videoId, startTrim, endTrim]
   );
 
+  // Saves trim values on change
   useEffect(() => {
     debouncedSaveTrimToStorage();
     // Clean up debounce on unmount
@@ -47,10 +49,8 @@ export function useTrimBar({ videoId }: Params) {
     trimContainerRef: MutableRefObject<HTMLDivElement | null>
   ) => {
     const parentRect = trimContainerRef.current?.getBoundingClientRect();
-
     if (!parentRect) return;
 
-    // Function to calculate position based on mouse or touch event
     const calculatePosition = (event: MouseEvent | TouchEvent) => {
       const clientX =
         event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
@@ -66,11 +66,12 @@ export function useTrimBar({ videoId }: Params) {
         setEndTrim(Math.max(position, startTrim + 1));
       }
     };
-    // Event listeners for mouse and touch
+
     const onMove = (event: MouseEvent | TouchEvent) => {
       setIsDragging(true);
       calculatePosition(event);
     };
+
     const onStop = () => {
       setIsDragging(false);
       document.removeEventListener("mousemove", onMove);
