@@ -4,38 +4,20 @@ interface Params {
   startTrim: number;
   endTrim: number;
   isDragging: boolean;
+  loadTrimFromStorage: () => void;
 }
 
-export function useYouTubePlayer({ startTrim, endTrim, isDragging }: Params) {
+export function useYouTubePlayer({
+  startTrim,
+  endTrim,
+  isDragging,
+  loadTrimFromStorage,
+}: Params) {
   const [player, setPlayer] = useState<YT.Player | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-
-  // Initializes player states once ready
-  const handlePlayerReady = useCallback((event: YT.PlayerEvent) => {
-    setIsPlayerReady(true);
-    setIsPlaying(false);
-    setDuration(event.target.getDuration());
-  }, []);
-  const handlePlayerStateChange = useCallback(
-    (event: YT.OnStateChangeEvent) => {
-      const { YT } = window;
-      if (event.data === YT.PlayerState.PLAYING) {
-        setIsPlaying(true);
-        return;
-      }
-
-      if (
-        event.data === YT.PlayerState.PAUSED ||
-        event.data === YT.PlayerState.ENDED
-      ) {
-        setIsPlaying(false);
-      }
-    },
-    []
-  );
 
   // Sync the player's currentTime with startTrim when the player is ready to play.
   useEffect(() => {
@@ -100,15 +82,48 @@ export function useYouTubePlayer({ startTrim, endTrim, isDragging }: Params) {
     return () => clearInterval(interval);
   }, [isPlaying, player, endTrim, duration]);
 
+  const handlePlayerInitialize = useCallback(
+    (player: YT.Player) => {
+      loadTrimFromStorage();
+      setPlayer(player);
+      setIsPlayerReady(false);
+    },
+    [loadTrimFromStorage]
+  );
+
+  // Initializes player states once ready
+  const handlePlayerReady = useCallback((event: YT.PlayerEvent) => {
+    setIsPlayerReady(true);
+    setIsPlaying(false);
+    setDuration(event.target.getDuration());
+  }, []);
+
+  const handlePlayerStateChange = useCallback(
+    (event: YT.OnStateChangeEvent) => {
+      const { YT } = window;
+      if (event.data === YT.PlayerState.PLAYING) {
+        setIsPlaying(true);
+        return;
+      }
+
+      if (
+        event.data === YT.PlayerState.PAUSED ||
+        event.data === YT.PlayerState.ENDED
+      ) {
+        setIsPlaying(false);
+      }
+    },
+    []
+  );
+
   return {
     player,
     isPlaying,
     isPlayerReady,
     duration,
     currentTime,
-    setPlayer,
-    setIsPlayerReady,
     setCurrentTime,
+    handlePlayerInitialize,
     handlePlayerReady,
     handlePlayerStateChange,
   };

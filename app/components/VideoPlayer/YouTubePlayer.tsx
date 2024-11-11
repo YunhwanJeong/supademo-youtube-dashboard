@@ -1,17 +1,9 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-} from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 interface Props {
   player: YT.Player | null;
   videoId: string;
-  setPlayer: Dispatch<SetStateAction<YT.Player | null>>;
-  setIsPlayerReady: Dispatch<SetStateAction<boolean>>;
-  loadTrimFromStorage: () => void;
+  onPlayerInitialize: (player: YT.Player) => void;
   onReady: (event: YT.PlayerEvent) => void;
   onStateChange: (event: YT.OnStateChangeEvent) => void;
 }
@@ -19,9 +11,7 @@ interface Props {
 export default function YouTubePlayer({
   player,
   videoId,
-  setPlayer,
-  setIsPlayerReady,
-  loadTrimFromStorage,
+  onPlayerInitialize,
   onReady,
   onStateChange,
 }: Props) {
@@ -30,26 +20,24 @@ export default function YouTubePlayer({
     if (playerRef.current === null) return;
     if (player) player.destroy(); // Destroy existing player if re-rendered
 
-    loadTrimFromStorage();
-    setIsPlayerReady(false);
-    setPlayer(
-      new window.YT.Player(playerRef.current, {
-        videoId,
-        playerVars: {
-          controls: 0,
-          showinfo: 0,
-          rel: 0,
-          modestbranding: 1,
-          enablejsapi: 1,
-          iv_load_policy: 3,
-          disablekb: 1,
-        },
-        events: {
-          onReady,
-          onStateChange,
-        },
-      })
-    );
+    const playerInstance = new window.YT.Player(playerRef.current, {
+      videoId,
+      playerVars: {
+        controls: 0,
+        showinfo: 0,
+        rel: 0,
+        modestbranding: 1,
+        enablejsapi: 1,
+        iv_load_policy: 3,
+        disablekb: 1,
+      },
+      events: {
+        onReady,
+        onStateChange,
+      },
+    });
+
+    onPlayerInitialize(playerInstance);
   }, [videoId]);
 
   useEffect(() => {

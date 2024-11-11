@@ -12,7 +12,7 @@ export function useTrimBar({ videoId }: Params) {
   const [isDragging, setIsDragging] = useState(false);
 
   // Loads saved trim data from localStorage for the specific video
-  const loadTrimFromStorage = () => {
+  const loadTrimFromStorage = useCallback(() => {
     const storedTrim = localStorage.getItem(`trim_${videoId}`);
     if (storedTrim) {
       const { startTrim, endTrim } = JSON.parse(storedTrim);
@@ -23,7 +23,7 @@ export function useTrimBar({ videoId }: Params) {
       setStartTrim(0);
       setEndTrim(100);
     }
-  };
+  }, [videoId]);
 
   // Debounced function to save trim values to localStorage
   const debouncedSaveTrimToStorage = useCallback(

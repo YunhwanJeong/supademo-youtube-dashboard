@@ -33,12 +33,11 @@ export default function VideoPlayer({ selectedVideo }: Props) {
     isPlayerReady,
     duration,
     currentTime,
-    setPlayer,
-    setIsPlayerReady,
     setCurrentTime,
+    handlePlayerInitialize,
     handlePlayerReady,
     handlePlayerStateChange,
-  } = useYouTubePlayer({ startTrim, endTrim, isDragging });
+  } = useYouTubePlayer({ startTrim, endTrim, isDragging, loadTrimFromStorage });
 
   const { handleBackwordClick, handlePlaybackClick, handleForwardClick } =
     useVideoControls({
@@ -56,9 +55,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
       <YouTubePlayer
         player={player}
         videoId={selectedVideo.id.videoId}
-        setPlayer={setPlayer}
-        setIsPlayerReady={setIsPlayerReady}
-        loadTrimFromStorage={loadTrimFromStorage}
+        onPlayerInitialize={handlePlayerInitialize}
         onReady={handlePlayerReady}
         onStateChange={handlePlayerStateChange}
       />
