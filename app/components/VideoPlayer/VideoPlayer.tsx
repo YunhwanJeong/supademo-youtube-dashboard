@@ -33,7 +33,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
     isPlayerReady,
     duration,
     currentTime,
-    setCurrentTime,
+    seekToTime,
     handlePlayerInitialize,
     handlePlayerReady,
     handlePlayerStateChange,
@@ -47,7 +47,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
       endTrim,
       duration,
       currentTime,
-      setCurrentTime,
+      seekToTime,
     });
 
   return (

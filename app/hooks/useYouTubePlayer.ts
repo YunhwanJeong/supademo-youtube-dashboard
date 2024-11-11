@@ -116,13 +116,24 @@ export function useYouTubePlayer({
     []
   );
 
+  const seekToTime = useCallback(
+    (time: number) => {
+      if (!player) return;
+
+      player.seekTo(time, true);
+      player.pauseVideo();
+      setCurrentTime(time);
+    },
+    [player]
+  );
+
   return {
     player,
     isPlaying,
     isPlayerReady,
     duration,
     currentTime,
-    setCurrentTime,
+    seekToTime,
     handlePlayerInitialize,
     handlePlayerReady,
     handlePlayerStateChange,

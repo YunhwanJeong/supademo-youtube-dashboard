@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback } from "react";
+import { useCallback } from "react";
 
 interface Params {
   player: YT.Player | null;
@@ -7,7 +7,7 @@ interface Params {
   endTrim: number;
   duration: number;
   currentTime: number;
-  setCurrentTime: Dispatch<SetStateAction<number>>;
+  seekToTime: (time: number) => void;
 }
 
 export function useVideoControls({
@@ -17,23 +17,19 @@ export function useVideoControls({
   endTrim,
   duration,
   currentTime,
-  setCurrentTime,
+  seekToTime,
 }: Params) {
   const handleBackwordClick = useCallback(() => {
     if (!player) return;
 
-    player.seekTo((startTrim * duration) / 100, true);
-    player.pauseVideo();
-    setCurrentTime((startTrim * duration) / 100);
-  }, [player, startTrim, duration, setCurrentTime]);
+    seekToTime((startTrim * duration) / 100);
+  }, [player, seekToTime, startTrim, duration]);
 
   const handleForwardClick = useCallback(() => {
     if (!player) return;
 
-    player.seekTo((endTrim / 100) * duration, true);
-    player.pauseVideo();
-    setCurrentTime((endTrim * duration) / 100);
-  }, [player, duration, endTrim, setCurrentTime]);
+    seekToTime((endTrim * duration) / 100);
+  }, [player, seekToTime, endTrim, duration]);
 
   const handlePlaybackClick = useCallback(() => {
     if (!player) return;
