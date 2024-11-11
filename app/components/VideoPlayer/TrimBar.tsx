@@ -24,6 +24,7 @@ export default function TrimBar({
   const [containerWidth, setContainerWidth] = useState(0);
   const trimContainerRef = useRef<HTMLDivElement | null>(null);
 
+  // Get and set trim container width for responsive handling
   useEffect(() => {
     if (trimContainerRef.current) {
       setContainerWidth(trimContainerRef.current.getBoundingClientRect().width);
