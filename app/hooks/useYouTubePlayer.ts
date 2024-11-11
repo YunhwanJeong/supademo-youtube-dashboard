@@ -127,6 +127,17 @@ export function useYouTubePlayer({
     [player]
   );
 
+  const togglePlayBack = useCallback(() => {
+    if (!player) return;
+    if (isPlaying) {
+      player.pauseVideo();
+      return;
+    }
+
+    player.seekTo(currentTime, true);
+    player.playVideo();
+  }, [currentTime, isPlaying, player]);
+
   return {
     player,
     isPlaying,
@@ -134,6 +145,7 @@ export function useYouTubePlayer({
     duration,
     currentTime,
     seekToTime,
+    togglePlayBack,
     handlePlayerInitialize,
     handlePlayerReady,
     handlePlayerStateChange,

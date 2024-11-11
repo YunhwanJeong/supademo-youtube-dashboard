@@ -8,16 +8,15 @@ interface Params {
   duration: number;
   currentTime: number;
   seekToTime: (time: number) => void;
+  togglePlayBack: () => void;
 }
 
 export function useVideoControls({
-  player,
-  isPlaying,
   startTrim,
   endTrim,
   duration,
-  currentTime,
   seekToTime,
+  togglePlayBack,
 }: Params) {
   const handleBackwordClick = useCallback(() => {
     seekToTime((startTrim * duration) / 100);
@@ -28,15 +27,8 @@ export function useVideoControls({
   }, [seekToTime, endTrim, duration]);
 
   const handlePlaybackClick = useCallback(() => {
-    if (!player) return;
-    if (isPlaying) {
-      player.pauseVideo();
-      return;
-    }
-
-    player.seekTo(currentTime, true);
-    player.playVideo();
-  }, [isPlaying, player, currentTime]);
+    togglePlayBack();
+  }, [togglePlayBack]);
 
   return {
     handleBackwordClick,

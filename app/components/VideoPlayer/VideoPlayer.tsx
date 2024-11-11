@@ -34,6 +34,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
     duration,
     currentTime,
     seekToTime,
+    togglePlayBack,
     handlePlayerInitialize,
     handlePlayerReady,
     handlePlayerStateChange,
@@ -48,6 +49,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
       duration,
       currentTime,
       seekToTime,
+      togglePlayBack,
     });
 
   return (
