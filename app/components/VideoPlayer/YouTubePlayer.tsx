@@ -64,7 +64,7 @@ export default function YouTubePlayer({
   return (
     <div
       ref={playerRef}
-      className="w-full h-80 pointer-events-none mb-3 lg:min-h-[540px] lg:rounded-xl"
+      className="w-full h-80 pointer-events-none mb-3 md:min-h-[400px] lg:min-h-[540px] lg:rounded-xl"
     ></div>
   );
 }

@@ -41,7 +41,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
   });
 
   return (
-    <div className="pb-5 lg:self-center lg:w-8/12 lg:max-w-screen-lg lg:my-0 lg:mx-auto">
+    <div className="pb-5 lg:self-center lg:w-7/12 lg:max-w-screen-lg lg:my-0 lg:mx-auto">
       <YouTubePlayer
         player={player}
         videoId={selectedVideo.id.videoId}
