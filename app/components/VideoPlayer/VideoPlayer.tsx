@@ -41,7 +41,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
   });
 
   return (
-    <div className="pb-5 lg:flex-1">
+    <div className="pb-5 lg:self-center lg:w-8/12 lg:max-w-screen-lg lg:my-0 lg:mx-auto">
       <YouTubePlayer
         player={player}
         videoId={selectedVideo.id.videoId}
@@ -51,7 +51,7 @@ export default function VideoPlayer({ selectedVideo }: Props) {
         onStateChange={handlePlayerStateChange}
       />
 
-      <div className="px-5">
+      <div className="px-5 lg:p-0">
         <VideoControls isPlaying={isPlaying} onPlaybackClick={handlePlayback} />
 
         <TrimBar

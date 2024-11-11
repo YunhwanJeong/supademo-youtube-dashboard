@@ -28,7 +28,7 @@ export default function VideoItem({
           }`}
       onClick={onClick}
     >
-      <div className="w-36">
+      <div className="w-32">
         <Image
           src={imageSrc}
           alt={`YouTube Video Thumbnail for ${video.snippet.title}`}
@@ -41,14 +41,14 @@ export default function VideoItem({
       </div>
       <div className="flex-1 min-w-0">
         <h4
-          className={`text-base line-clamp-2 transition-all duration-200
-            ${isSelected ? "font-extrabold" : "font-semibold"}`}
+          className={`text-sm line-clamp-2 transition-all duration-200 mb-1
+            ${isSelected ? "font-bold" : "font-medium"}`}
         >
           {video.snippet.title}
         </h4>
         <p
-          className={`text-sm text-gray-600 line-clamp-2 transition-all duration-200
-            ${isSelected ? "font-semibold" : "font-normal"}`}
+          className={`text-xs text-gray-500 line-clamp-2 transition-all duration-200
+            ${isSelected ? "font-medium" : "font-light"}`}
         >
           {video.snippet.description}
         </p>
