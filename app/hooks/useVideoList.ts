@@ -13,7 +13,7 @@ export function useVideoList({ rawVideos }: Params) {
   const [videos, setVideos] = useState<VideoItemType[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Update videos when searchResults or page changes
+  // Update videos when searchResults changes
   useEffect(() => {
     setVideos(searchResults.slice(0, videosPerPage));
   }, [searchResults]);
@@ -39,7 +39,6 @@ export function useVideoList({ rawVideos }: Params) {
     setLoading(false);
   }, [loading, page, searchResults, videosPerPage]);
 
-  // Handle search functionality
   const handleSearch = useCallback(
     (query: string) => {
       if (query.trim() === "") {
