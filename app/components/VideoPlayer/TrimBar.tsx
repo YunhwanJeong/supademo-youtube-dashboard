@@ -42,11 +42,17 @@ export default function TrimBar({
   }, [trimContainerRef]);
 
   const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor((time % 3600) / 60);
     const seconds = Math.floor(time % 60)
       .toString()
       .padStart(2, "0");
-    return `${minutes}:${seconds}`;
+
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds}`;
+    } else {
+      return `${minutes}:${seconds}`;
+    }
   };
 
   return (
