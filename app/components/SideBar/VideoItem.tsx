@@ -43,12 +43,14 @@ export default function VideoItem({
         <h4
           className={`text-sm line-clamp-2 transition-all duration-200 mb-1
             ${isSelected ? "font-bold" : "font-medium"}`}
+          title={video.snippet.title}
         >
           {video.snippet.title}
         </h4>
         <p
           className={`text-xs text-gray-500 line-clamp-2 transition-all duration-200
             ${isSelected ? "font-medium" : "font-light"}`}
+          title={video.snippet.description}
         >
           {video.snippet.description}
         </p>
